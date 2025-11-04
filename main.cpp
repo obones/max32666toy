@@ -75,14 +75,14 @@ CRGB leds[NUM_LEDS];
 
 int main(void)
 {
-    FastLED.addLeds<WS2812B, 12>(leds, NUM_LEDS);
-
-    leds[0] = CRGB::Red; FastLED.show();
-
     LED led = LED(2);
 
     MXC_SYS_RTCClockEnable();
     MXC_RTC_Init(0, 0);
+
+    FastLED.addLeds<WS2812B, 12>(leds, NUM_LEDS);
+
+    leds[0] = CRGB::Red; FastLED.show();
 
     printf("C++ Hello World Example\n");
     /*
