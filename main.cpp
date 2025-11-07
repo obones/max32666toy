@@ -35,6 +35,7 @@
 #include "mxc_sys.h"
 #include "rtc.h"
 
+#include "Arduino.h"
 #include "FastLED.h"
 
 /***** Definitions *****/
@@ -73,8 +74,25 @@ private:
 #define NUM_LEDS 8*8
 CRGB leds[NUM_LEDS];
 
+void MyDelay(uint32_t us)
+{
+    //MXC_Delay(500000); return;
+
+    uint32_t startMicros = micros();
+    uint32_t endMicros = startMicros;
+    while (endMicros - startMicros < us)
+        endMicros = micros();
+
+    //printf("startMicros = %d\n", startMicros);
+    //printf("endMicros = %d\n", endMicros);
+}
+
 int main(void)
 {
+    printf("MAX32666 Toy for E14 challenge\n");
+
+    InitArduino();
+
     LED led = LED(2);
 
     MXC_SYS_RTCClockEnable();
@@ -84,7 +102,6 @@ int main(void)
 
     leds[0] = CRGB::Red; FastLED.show();
 
-    printf("C++ Hello World Example\n");
     /*
         Note: Use printf instead of std::cout.
         iostream consumes an extreme amount of code space.  Our printf
@@ -93,9 +110,9 @@ int main(void)
 
     while (1) {
         led.on();
-        MXC_Delay(500000);
+        MyDelay(500000);
         led.off();
-        MXC_Delay(500000);
+        MyDelay(500000);
         led.print_blink_count();
     }
 
