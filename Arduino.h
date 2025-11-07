@@ -4,9 +4,11 @@
 
 #include <stdint.h>
 
+void InitArduino();
+
 extern "C"
 {
-    // Must enable both the RTC clock source and the RTC subsystem outside of FastLED
+    // InitArduino must have been called beforehand
     uint32_t millis();
     uint32_t micros();
     void delay(int ms);
