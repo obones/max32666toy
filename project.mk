@@ -22,12 +22,14 @@
 # For instructions on how to use this system, see
 # https://analogdevicesinc.github.io/msdk/USERGUIDE/#build-system
 
-#MXC_OPTIMIZE_CFLAGS = -Og
+#DEBUG=1
+MXC_OPTIMIZE_CFLAGS = -O0
 # ^ For example, you can uncomment this line to
 # optimize the project for debugging
 
 # PROJ_CFLAGS += -IFastLED/src/
 # PROJ_CFLAGS += --verbose
+PROJ_CFLAGS += -DMSDK_NO_GPIO_CLK_INIT
 
 IPATH += FastLED/src/
 VPATH += FastLED/src/
