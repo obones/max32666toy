@@ -23,17 +23,23 @@
 # https://analogdevicesinc.github.io/msdk/USERGUIDE/#build-system
 
 #DEBUG=1
-MXC_OPTIMIZE_CFLAGS = -O0
+# MXC_OPTIMIZE_CFLAGS = -O0
 # ^ For example, you can uncomment this line to
 # optimize the project for debugging
 
 # PROJ_CFLAGS += -IFastLED/src/
 # PROJ_CFLAGS += --verbose
-PROJ_CFLAGS += -DMSDK_NO_GPIO_CLK_INIT
+# PROJ_CFLAGS += -DMSDK_NO_GPIO_CLK_INIT
+PROJ_CFLAGS += -DFL_ARM_NO_CYCCNT
+# PROJ_CFLAGS += -DMAX32_TMR4_CLOCKLESS
+PROJ_CFLAGS += -DMAX32_I2S_CLOCKLESS
 
 IPATH += FastLED/src/
 VPATH += FastLED/src/
 VPATH += FastLED/src/fl
+VPATH += FastLED/src/platforms/arm/max32
+
+MFLOAT_ABI = hard
 
 # **********************************************************
 
