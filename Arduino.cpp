@@ -20,27 +20,33 @@ void InitArduino()
 
     mxc_tmr_cfg_t config =
     {
-        mode: MXC_TMR_MODE_CONTINUOUS
+        mode: MXC_TMR_MODE_CONTINUOUS,
     };
 
     // Only those four can handle microsecond precision, lower frequency sources cannot.
     // For instance, the 32.768kHz source gives a tick duration of 61us even with a :1 prescaler
+    // Note that we value rollover duration over precision. For instance, at 96MHz, the rollover
+    // is the expected 71.58 minutes but the precision is 1.3333us
     switch(SystemCoreClock)
     {
         case 96000000:
             config.pres = MXC_TMR_PRES_64;
+            config.cmp_cnt = 0xC0000000;
             timerDivider = 0.75;
             break;
         case 60000000:
             config.pres = MXC_TMR_PRES_32;
+            config.cmp_cnt = 0xF0000000;
             timerDivider = 0.9375;
             break;
         case 32000000:
             config.pres = MXC_TMR_PRES_16;
+            config.cmp_cnt = 0xFFFFFFFF;
             timerDivider = 1;
             break;
         case 7372800:
             config.pres = MXC_TMR_PRES_4;
+            config.cmp_cnt = 0xEBEDFA43;
             timerDivider = 0.9216;
             break;
     }
