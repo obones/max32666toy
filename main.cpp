@@ -130,7 +130,7 @@ mxc_audio_I2S_config_t getAudioConfig()
     config.BCLKSourceSelect = MXC_AUDIO_BCLK_GENERATOR_TOGGLE;
     config.BCLKSource = MXC_AUDIO_BCLK_SOURCE_F_AUDIO;
     config.BCLKPolarity = MXC_AUDIO_CLK_POL_HIGH;
-    config.BCLKDivisor = 0x78;
+    config.BCLKDivisor = 6; //0x78;
     config.LRCLKPolarity = MXC_AUDIO_CLK_POL_HIGH;
     config.LRCLKDivider = MXC_AUDIO_LRCLK_DIV_48;
     config.channelSize = MXC_AUDIO_PCM_CHANNEL_SIZE_24; // want 32 but 24 gets out
