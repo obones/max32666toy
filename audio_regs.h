@@ -468,6 +468,12 @@ typedef struct {
 #define MXC_F_EN_AE_PCM_RX_POS 10 /**< MXC_F_EN_AE_PCM_RX Position */
 #define MXC_F_EN_AE_PCM_RX ((uint32_t)(0x01UL << MXC_F_EN_AE_PCM_RX_POS)) /**< MXC_F_EN_AE_PCM_RX */
 
+#define MXC_F_EN_AE_PCM_TX_POS 11 /**< MXC_F_EN_AE_PCM_TX Position */
+#define MXC_F_EN_AE_PCM_TX ((uint32_t)(0x01UL << MXC_F_EN_AE_PCM_TX_POS)) /**< MXC_F_EN_AE_PCM_TX */
+
+#define MXC_F_EN_HF_PCM_TX_POS 19 /**< MXC_F_EN_HF_PCM_TX Position */
+#define MXC_F_EN_HF_PCM_TX ((uint32_t)(0x01UL << MXC_F_EN_HF_PCM_TX_POS)) /**< MXC_F_EN_HF_PCM_TX */
+
 /**@} end of group AUDIO_INT_EN */
 
 /**
