@@ -274,7 +274,7 @@ pixelsPulses:
             for (int ledIndex = NUM_LEDS - 1; ledIndex > 0; ledIndex--)
                 leds[ledIndex] = leds[ledIndex - 1];
 
-            if (blinkCount - blinkThreshold < sizeof(pattern) /sizeof(pattern[0]))
+            if (blinkCount - blinkThreshold < (int)(sizeof(pattern) /sizeof(pattern[0])))
                 leds[0] = pattern[blinkCount - blinkThreshold];
             else
                 leds[0] = lastLedValue;
