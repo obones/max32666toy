@@ -65,6 +65,10 @@ public:
     {
         printf("Number of blinks: %i\n", blink_count);
     }
+    int get_blink_count()
+    {
+        return blink_count;
+    }
 
 private:
     int idx;
@@ -72,7 +76,7 @@ private:
 };
 
 
-#define NUM_LEDS 1//8*8
+#define NUM_LEDS 8*8
 CRGB leds[NUM_LEDS];
 
 void MyDelay(uint32_t us)
@@ -276,7 +280,10 @@ int main(void)
 
     FastLED.addLeds<WS2812B, 12, GRB>(leds, NUM_LEDS);
 
-    leds[0] = CRGB::Red;
+    for (int i = 0; i < NUM_LEDS; i++)
+    {
+        leds[i] = 0x00000F << ((i % 3) * 8);
+    }
 
     MXC_GPIO_OutSet(MXC_GPIO0, MXC_GPIO_PIN_21);
 
@@ -338,17 +345,41 @@ pixelsPulses:
     */
 
     setPin();
+    constexpr CRGB pattern[7] = {0x00000F, 0x000F00, 0x0F0000, 0x000F0F, 0x0F000F, 0x0F0F00, 0x0F0F0F};
     while (1) {
 
+        constexpr int delay = 50000;
         led.on();
-        MyDelay(500000);
+        MyDelay(delay);
         //togglePin();
         led.off();
-        MyDelay(500000);
+        MyDelay(delay);
         //togglePin();
         //led.print_blink_count();
         /*if ((MXC_TMR4->cnt % 10 == 0))
             togglePin();*/
+
+        int blinkCount = led.get_blink_count();
+        constexpr int blinkThreshold = 6;
+        if (blinkCount == blinkThreshold)
+        {
+            for (int ledIndex = 0; ledIndex < NUM_LEDS; ledIndex++)
+                leds[ledIndex] = CRGB::Black;
+            leds[0] = pattern[0];
+        }
+        else if (blinkCount > blinkThreshold)
+        {
+            CRGB lastLedValue = leds[NUM_LEDS - 1];
+            for (int ledIndex = NUM_LEDS - 1; ledIndex > 0; ledIndex--)
+                leds[ledIndex] = leds[ledIndex - 1];
+
+            if (blinkCount - blinkThreshold < sizeof(pattern) /sizeof(pattern[0]))
+                leds[0] = pattern[blinkCount - blinkThreshold];
+            else
+                leds[0] = lastLedValue;
+        }
+
+        FastLED.show();
     }
 
     return 0;
