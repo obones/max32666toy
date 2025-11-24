@@ -136,7 +136,6 @@ inline void clearPin()
 
 inline void __attribute__ ((optimize("-Ofast"))) togglePin()
 {
-    //MXC_GPIO_OutToggle(MXC_GPIO0, MXC_GPIO_PIN_12);
     MXC_GPIO0->out ^= MXC_GPIO_PIN_12;
 }
 
@@ -152,7 +151,6 @@ int main(void)
 
     prepareOutputPin();
     prepareTimer4();
-    prepareAudio();
 
     typedef struct {
         uint32_t us_ticks;
@@ -169,14 +167,6 @@ int main(void)
     for (uint8_t tick = 0; tick < NUM_TICKS; tick++)
         printf("%u;%u\n", ticks[tick].us_ticks, ticks[tick].ns_ticks);
 
-
-    /*clearPin();
-    while(1)
-    {
-        //if (MXC_TMR4->cnt % 10 == 0)
-            togglePin();
-    }*/
-
     LED led = LED(2);
 
     FastLED.addLeds<WS2812B, 12, GRB>(leds, NUM_LEDS);
@@ -189,53 +179,6 @@ int main(void)
     MXC_GPIO_OutSet(MXC_GPIO0, MXC_GPIO_PIN_21);
 
     FastLED.show();
-
-    /*while(1)
-    {
-    MXC_AUDIO->tx_pcm_ch0_addr = 0b01111111111110100111111111110110; //0xEFFFEFFF; // 0xAAAAAAAA;//0xF0F0F0F0;
-    MXC_AUDIO->tx_pcm_ch1_addr = 0b01111111111011100111111111011110; //0xEFFFFDFF; 0xAAAAAAAA;//0b11100111001110011000110001100000;
-
-    MXC_AUDIO->tx_pdm_ch0_addr = 0xFFFFFFFF;
-    }*/
-
-    /*
-chipset frequency: 800.000000 Khz
-smallest: 250
-pgcd: 125
-precision:0
-nb pulse per bit: 10
-    T1Pulses: 2
-    T2Pulses: 5
-    T3Pulses: 3
-needed frequency (nbPulse per bit) * (chipset // frequency): 8.000000 Mhz
-SystemCoreClock: 96000000
-needed BitCLK divider: 12
-gOneBit:  00000000'00000000'00000011'11111000
-gOneBit:  00000000'00000000'00000011'00000000
-pixelsPulsesSize: 13
-  remainingBits: 4 - gPulsesPerBit: 10 - currentPulsePos: 2, LOWEST_USABLE_BIT_INDEX: 8
-  remainingBits: 8 - gPulsesPerBit: 10 - currentPulsePos: 6, LOWEST_USABLE_BIT_INDEX: 8
-  remainingBits: 2 - gPulsesPerBit: 10 - currentPulsePos: 0, LOWEST_USABLE_BIT_INDEX: 8
-  remainingBits: 6 - gPulsesPerBit: 10 - currentPulsePos: 4, LOWEST_USABLE_BIT_INDEX: 8
-  remainingBits: 0 - gPulsesPerBit: 10 - currentPulsePos: -2, LOWEST_USABLE_BIT_INDEX: 8
-  remainingBits: 4 - gPulsesPerBit: 10 - currentPulsePos: 2, LOWEST_USABLE_BIT_INDEX: 8
-  remainingBits: 8 - gPulsesPerBit: 10 - currentPulsePos: 6, LOWEST_USABLE_BIT_INDEX: 8
-  remainingBits: 2 - gPulsesPerBit: 10 - currentPulsePos: 0, LOWEST_USABLE_BIT_INDEX: 8
-  remainingBits: 6 - gPulsesPerBit: 10 - currentPulsePos: 4, LOWEST_USABLE_BIT_INDEX: 8
-pixelsPulses:
-11111110'00111111'10001111'00000000 11100011'11111000'11111110'00000000
-00111111'10001111'11100011'00000000 11111000'11000000'00110000'00000000
-00001100'00000011'00000000'00000000 11000000'00110000'00001100'00000000
-00000011'00000000'11000000'00000000 00110000'00001100'00000011'00000000
-00000000'11000000'00110000'00000000 00001100'00000011'00000000'00000000
-00000000'00000000'00000000'00000000 00000000'00000000'00000000'00000000
-00000000'00000000'00000000'00000000
-
-1111111000 1111111000 1111111000 1111111000 1111111000 1111111000 1111111000 1111111000
-1100000000 1100000000 1100000000 1100000000 1100000000 1100000000 1100000000 1100000000
-1100000000 1100000000 1100000000 1100000000 1100000000 1100000000 1100000000 1100000000
-0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 00
-    */
 
     MXC_GPIO_OutClr(MXC_GPIO0, MXC_GPIO_PIN_21);
 
