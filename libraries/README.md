@@ -1,0 +1,6 @@
+This folder contains the external libraries required for this project, some of which must be grabbed manually.
+
+FastLED:
+A checkout of the https://github.com/obones/FastLED/tree/MAX32666 branch should be checked out in a folder named FastLED
+
+GIFReader

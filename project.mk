@@ -27,17 +27,21 @@
 # ^ For example, you can uncomment this line to
 # optimize the project for debugging
 
-# PROJ_CFLAGS += -IFastLED/src/
 # PROJ_CFLAGS += --verbose
 # PROJ_CFLAGS += -DMSDK_NO_GPIO_CLK_INIT
 PROJ_CFLAGS += -DFL_ARM_NO_CYCCNT
 
-IPATH += FastLED/src/
-VPATH += FastLED/src/
-VPATH += FastLED/src/fl
-VPATH += FastLED/src/platforms/arm/max32
+IPATH += include
+IPATH += libraries/FastLED/src/
+
+VPATH += src/
+VPATH += libraries/FastLED/src/
+VPATH += libraries/FastLED/src/fl
+VPATH += libraries/FastLED/src/platforms/arm/max32
 
 MFLOAT_ABI = hard
+
+LIB_SDHC = 1
 
 # **********************************************************
 

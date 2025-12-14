@@ -77,7 +77,19 @@
     ],
     "idf.pythonInstallPath": "D:\\Documents\\prog\\esp\\.espressif\\tools\\idf-python\\3.8.7\\python.exe",
     "files.associations": {
-        "rtc.h": "c"
-    }
+        "rtc.h": "c",
+        "htmr_regs.h": "c",
+        "htmr_reva.h": "c",
+        "htmr.h": "c",
+        "mxc_device.h": "c",
+        "tmr.h": "c",
+        "tmr_common.h": "c",
+        "sharp_mip.h": "c",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "ranges": "cpp"
+    },
+    "cortex-debug.variableUseNaturalFormat": false
 }
 

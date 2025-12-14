@@ -226,5 +226,8 @@ int main(void)
         FastLED.show();
     }
 
+    // https://github.com/Ferki-git-creator/TurboStitchGIF-HeaderOnly-Fast-ZeroAllocation-PlatformIndependent-Embedded-C-GIF-Decoder/blob/main/gif.h
+    // https://giflib.sourceforge.net/
+
     return 0;
 }
