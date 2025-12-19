@@ -16,6 +16,8 @@ public:
 
     static void init();
     static void update();
+
+    static void displayOneBitImage(const uint8_t* bits, CRGB color);
 };
 
 #endif
