@@ -37,7 +37,8 @@
 #include "audio.h"
 
 #include "Arduino.h"
-#include "FastLED.h"
+
+#include "led_display.h"
 
 #include "activity.h"
 #include "activity_factory.h"
@@ -78,9 +79,6 @@ private:
     int blink_count;
 };
 
-
-#define NUM_LEDS 8*8
-CRGB leds[NUM_LEDS];
 
 void MyDelay(uint32_t us)
 {
@@ -172,8 +170,9 @@ int main(void)
 
     LED led = LED(2);
 
-    FastLED.addLeds<WS2812B, 12, GRB>(leds, NUM_LEDS);
+    Display::init();
 
+    CRGB* leds = Display::leds;
     for (int i = 0; i < NUM_LEDS; i++)
     {
         leds[i] = 0x00000F << ((i % 3) * 8);
@@ -181,19 +180,17 @@ int main(void)
 
     MXC_GPIO_OutSet(MXC_GPIO0, MXC_GPIO_PIN_21);
 
-    FastLED.show();
+    Display::update();
 
     MXC_GPIO_OutClr(MXC_GPIO0, MXC_GPIO_PIN_21);
 
     /*
         Note: Use printf instead of std::cout.
         iostream consumes an extreme amount of code space.  Our printf
-        function is better optimized for microcontrollers with limited flash
+        function is better optimized for micro-controllers with limited flash
     */
 
     Activity* activity = ActivityFactory::BuildActivity(0);
-    activity->loop();
-    delete activity;
 
     setPin();
     constexpr CRGB pattern[7] = {0x00000F, 0x000F00, 0x0F0000, 0x000F0F, 0x0F000F, 0x0F0F00, 0x0F0F0F};
@@ -217,24 +214,25 @@ int main(void)
             for (int ledIndex = 0; ledIndex < NUM_LEDS; ledIndex++)
                 leds[ledIndex] = CRGB::Black;
             leds[0] = pattern[0];
+
+            Display::update();
         }
         else if (blinkCount > blinkThreshold)
         {
-            CRGB lastLedValue = leds[NUM_LEDS - 1];
+            activity->loop();
+
+            /*CRGB lastLedValue = leds[NUM_LEDS - 1];
             for (int ledIndex = NUM_LEDS - 1; ledIndex > 0; ledIndex--)
                 leds[ledIndex] = leds[ledIndex - 1];
 
             if (blinkCount - blinkThreshold < (int)(sizeof(pattern) /sizeof(pattern[0])))
                 leds[0] = pattern[blinkCount - blinkThreshold];
             else
-                leds[0] = lastLedValue;
+                leds[0] = lastLedValue;*/
         }
-
-        FastLED.show();
     }
 
-    // https://github.com/Ferki-git-creator/TurboStitchGIF-HeaderOnly-Fast-ZeroAllocation-PlatformIndependent-Embedded-C-GIF-Decoder/blob/main/gif.h
-    // https://giflib.sourceforge.net/
+    delete activity;
 
     return 0;
 }
