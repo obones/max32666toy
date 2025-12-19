@@ -1,7 +1,7 @@
 #include "led_display.h"
 #include "FastLED.h"
 
-static CRGB leds[NUM_LEDS];
+CRGB Display::leds[NUM_LEDS] = {};
 
 void Display::init()
 {
@@ -11,10 +11,5 @@ void Display::init()
 void Display::update()
 {
     FastLED.show();
-}
-
-CRGB* Display::getLeds()
-{
-    return leds;
 }
 

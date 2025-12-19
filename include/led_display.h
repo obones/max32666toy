@@ -11,10 +11,11 @@ public:
     static constexpr uint8_t Width = 8;
     static constexpr uint8_t Height = 8;
 
+    // direct access, be careful what you do with this
+    static CRGB leds[NUM_LEDS];
+
     static void init();
     static void update();
-
-    static CRGB* getLeds();
 };
 
 #endif

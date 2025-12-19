@@ -238,7 +238,7 @@ void GifActivity::loop()
 {
     if (gif.getLastError() == GIF_SUCCESS)
     {
-        gif.setFrameBuf(Display::getLeds());
+        gif.setFrameBuf(Display::leds);
         gif.setDrawType(GIF_DRAW_COOKED);
 
         int frameDelay;
