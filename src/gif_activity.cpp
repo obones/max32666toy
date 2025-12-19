@@ -198,7 +198,7 @@ static void GIFDraw(GIFDRAW *pDraw)
 {
 }
 
-bool GifActivity::loadFile(int index)
+bool GifActivity::loadFile(size_t index)
 {
     if (index > files.size())
         return false;

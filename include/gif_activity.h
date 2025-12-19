@@ -22,7 +22,7 @@ private:
     int initSDCard();
     int mount();
     int listFiles();
-    bool loadFile(int index);
+    bool loadFile(size_t index);
 public:
     GifActivity();
 
