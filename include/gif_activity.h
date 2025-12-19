@@ -19,9 +19,9 @@ private:
 
     bool mounted;
 
-    int initSDCard();
-    int mount();
-    int listFiles();
+    bool initSDCard();
+    FRESULT mount();
+    FRESULT listFiles();
     bool loadFile(size_t index);
 public:
     GifActivity();

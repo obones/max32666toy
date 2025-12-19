@@ -44,7 +44,7 @@ const TCHAR* GIF_ERRORS[] =
    "GIF_ERROR_MEMORY"
 };
 
-int GifActivity::initSDCard()
+bool GifActivity::initSDCard()
 {
     // Enable Power To Card
     mxc_gpio_cfg_t SDPowerEnablePin = { MXC_GPIO1, MXC_GPIO_PIN_6, MXC_GPIO_FUNC_OUT, MXC_GPIO_PAD_NONE,
@@ -59,7 +59,7 @@ int GifActivity::initSDCard()
     cfg.clk_div = 0x0b0; // Maximum divide ratio, frequency must be >= 400 kHz during Card Identification phase
     if (MXC_SDHC_Init(&cfg) != E_NO_ERROR) {
         printf("Unable to initialize SDHC driver.\n");
-        return -1;
+        return false;
     }
 
     MXC_GPIO_Config(&SDPowerEnablePin);
@@ -77,7 +77,7 @@ int GifActivity::initSDCard()
     else
     {
         printf("No card response! Remove card, reset EvKit, and try again.\n");
-        return -1;
+        return false;
     }
 
     if (MXC_SDHC_Lib_Get_Card_Type() == CARD_SDHC)
@@ -85,10 +85,10 @@ int GifActivity::initSDCard()
     else
         printf("Card type: MMC/eMMC\n");
 
-    return 0;
+    return true;
 }
 
-int GifActivity::listFiles()
+FRESULT GifActivity::listFiles()
 {
     FRESULT err; //FFat Result (Struct)
     DIR dir; //FFat Directory Object
@@ -114,7 +114,7 @@ int GifActivity::listFiles()
             printf("\n");
         }
         f_closedir(&dir);
-        return 0;
+        return FR_OK;
     }
     else
     {
@@ -123,7 +123,7 @@ int GifActivity::listFiles()
     }
 }
 
-int GifActivity::mount(void)
+FRESULT GifActivity::mount(void)
 {
     FRESULT err;
     if ((err = f_mount(&fs, "", 1)) != FR_OK) //Mount the default drive to fs now
@@ -221,17 +221,45 @@ bool GifActivity::loadFile(size_t index)
     return true;
 }
 
+const uint8_t SDImage[] =
+{
+    0b01101100,
+    0b10001010,
+    0b10001001,
+    0b10001001,
+    0b01001001,
+    0b00101001,
+    0b00101010,
+    0b11001100,
+};
+
 GifActivity::GifActivity()
 {
-    initSDCard();
+    Display::displayOneBitImage(SDImage, 0xF0F000);
 
-    mount();
+    if (!initSDCard())
+    {
+        Display::displayOneBitImage(SDImage, 0xF00000);
+        return;
+    }
 
-    listFiles();
+    if (mount() != FR_OK)
+    {
+        Display::displayOneBitImage(SDImage, 0xF0F000);
+        return;
+    }
+
+    if (listFiles() != FR_OK)
+    {
+        Display::displayOneBitImage(SDImage, 0xF08000);
+        return;
+    }
 
     gif.begin(GIF_PALETTE_RGB888);
 
     loadFile(currentFileIndex);
+
+    Display::displayOneBitImage(SDImage, 0x008000);
 }
 
 void GifActivity::loop()
