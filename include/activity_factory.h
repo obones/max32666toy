@@ -5,6 +5,7 @@
 
 class ActivityFactory
 {
+public:
     static Activity* BuildActivity(int index);
 };
 
