@@ -39,6 +39,9 @@
 #include "Arduino.h"
 #include "FastLED.h"
 
+#include "activity.h"
+#include "activity_factory.h"
+
 /***** Definitions *****/
 
 /***** Globals *****/
@@ -187,6 +190,10 @@ int main(void)
         iostream consumes an extreme amount of code space.  Our printf
         function is better optimized for microcontrollers with limited flash
     */
+
+    Activity* activity = ActivityFactory::BuildActivity(0);
+    activity->loop();
+    delete activity;
 
     setPin();
     constexpr CRGB pattern[7] = {0x00000F, 0x000F00, 0x0F0000, 0x000F0F, 0x0F000F, 0x0F0F00, 0x0F0F0F};
