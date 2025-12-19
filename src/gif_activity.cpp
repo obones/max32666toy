@@ -196,10 +196,50 @@ static int32_t GIFSeekFile(GIFFILE *pFile, int32_t iPosition)
 
 static void GIFDraw(GIFDRAW *pDraw)
 {
+    /*printf("bytes: ");
+    for (int x = 0; x < pDraw->iCanvasWidth * 3; x++)
+    {
+        printf("%.2x ", pDraw->pPixels[x]);
+    }
+    printf("\n");*/
+
+    printf("CRGB: ");
+    CRGB* sourcePixel = (CRGB*)pDraw->pPixels;
+    //uint8_t* sourcePixel = pDraw->pPixels;
+    CRGB* destPixel = &Display::leds[Display::Width * pDraw->y];
+    for (int x = 0; x < pDraw->iCanvasWidth; x++)
+    {
+        CRGB pixelValue = *sourcePixel;
+        /*pixelValue.r = *sourcePixel++;
+        pixelValue.g = *sourcePixel++;
+        pixelValue.b = *sourcePixel++;*/
+        //constexpr int tmp = sizeof(CRGB);
+        printf("%.2x%.2x%.2x ", pixelValue.red, pixelValue.green, pixelValue.blue);
+
+        *destPixel = pixelValue;
+
+        sourcePixel++;
+        destPixel++;
+    }
+    printf("\n");
+}
+
+// memory allocation callback function
+void* GIFAlloc(uint32_t u32Size)
+{
+    return malloc(u32Size);
+}
+
+// memory free callback function
+void GIFFree(void *p)
+{
+    free(p);
 }
 
 bool GifActivity::loadFile(size_t index)
 {
+    gif.freeFrameBuf(GIFFree);
+
     if (index > files.size())
         return false;
 
@@ -215,6 +255,13 @@ bool GifActivity::loadFile(size_t index)
     else
     {
         printf("Could not open gif %s: %s\n", files[index].c_str(), GIF_ERRORS[gif.getLastError()]);
+        return false;
+    }
+
+    if (gif.allocFrameBuf(GIFAlloc) != GIF_SUCCESS)
+    {
+        printf("Insufficient memory!\n");
+        gif.close();
         return false;
     }
 
@@ -235,23 +282,23 @@ const uint8_t SDImage[] =
 
 GifActivity::GifActivity()
 {
-    Display::displayOneBitImage(SDImage, 0xF0F000);
+    Display::displayOneBitImage(SDImage, 0x404000);
 
     if (!initSDCard())
     {
-        Display::displayOneBitImage(SDImage, 0xF00000);
+        Display::displayOneBitImage(SDImage, 0x400000);
         return;
     }
 
     if (mount() != FR_OK)
     {
-        Display::displayOneBitImage(SDImage, 0xF0F000);
+        Display::displayOneBitImage(SDImage, 0x404000);
         return;
     }
 
     if (listFiles() != FR_OK)
     {
-        Display::displayOneBitImage(SDImage, 0xF08000);
+        Display::displayOneBitImage(SDImage, 0x400F00);
         return;
     }
 
@@ -259,19 +306,38 @@ GifActivity::GifActivity()
 
     loadFile(currentFileIndex);
 
-    Display::displayOneBitImage(SDImage, 0x008000);
+    Display::displayOneBitImage(SDImage, 0x004000);
 }
 
 void GifActivity::loop()
 {
     if (gif.getLastError() == GIF_SUCCESS)
     {
-        gif.setFrameBuf(Display::leds);
+        //gif.setFrameBuf(Display::leds);
         gif.setDrawType(GIF_DRAW_COOKED);
 
-        int frameDelay;
-        if (gif.playFrame(true, &frameDelay))
+        if (gif.playFrame(true, nullptr) == GIF_SUCCESS)
+        {
+            for (int y = 0; y < Display::Height; y++)
+            {
+                for (int x = 0; x < Display::Width; x++)
+                {
+                    CRGB pixelValue = Display::leds[y * Display::Width + x];
+                    printf("%.2x%.2x%.2x ", pixelValue.red, pixelValue.green, pixelValue.blue);
+                }
+
+                printf("\n");
+            }
+
             Display::update();
+            printf("\n");
+        }
+        else
+        {
+            int lastError = gif.getLastError();
+            if (lastError != GIF_SUCCESS)
+                printf("could not play frame: %s\n", GIF_ERRORS[lastError]);
+        }
     }
     else
     {
