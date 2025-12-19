@@ -35,11 +35,13 @@ PROJ_CFLAGS += -DFL_ARM_NO_CYCCNT
 
 IPATH += include
 IPATH += libraries/FastLED/src/
+IPATH += libraries/AnimatedGIF/src/
 
 VPATH += src/
 VPATH += libraries/FastLED/src/
 VPATH += libraries/FastLED/src/fl
 VPATH += libraries/FastLED/src/platforms/arm/max32
+VPATH += libraries/AnimatedGIF/src/
 
 MFLOAT_ABI = hard
 
