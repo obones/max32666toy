@@ -22,6 +22,8 @@
 # For instructions on how to use this system, see
 # https://analogdevicesinc.github.io/msdk/USERGUIDE/#build-system
 
+#VERBOSE=1
+
 #DEBUG=1
 # MXC_OPTIMIZE_CFLAGS = -O0
 # ^ For example, you can uncomment this line to
@@ -41,7 +43,11 @@ VPATH += libraries/FastLED/src/platforms/arm/max32
 
 MFLOAT_ABI = hard
 
+# Enable SDHC library
 LIB_SDHC = 1
+
+# Use FatFS version R0.15
+FATFS_VERSION = ff15
 
 # **********************************************************
 
