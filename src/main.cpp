@@ -196,12 +196,12 @@ int main(void)
     constexpr CRGB pattern[7] = {0x00000F, 0x000F00, 0x0F0000, 0x000F0F, 0x0F000F, 0x0F0F00, 0x0F0F0F};
     while (1) {
 
-        constexpr int delay = 50000;
+        /*constexpr int delay = 50000;
         led.on();
         MyDelay(delay);
         //togglePin();
         led.off();
-        MyDelay(delay);
+        MyDelay(delay);*/
         //togglePin();
         //led.print_blink_count();
         /*if ((MXC_TMR4->cnt % 10 == 0))
@@ -209,7 +209,7 @@ int main(void)
 
         int blinkCount = led.get_blink_count();
         constexpr int blinkThreshold = 6;
-        if (blinkCount == blinkThreshold)
+        /*if (blinkCount == blinkThreshold)
         {
             for (int ledIndex = 0; ledIndex < NUM_LEDS; ledIndex++)
                 leds[ledIndex] = CRGB::Black;
@@ -217,7 +217,7 @@ int main(void)
 
             Display::update();
         }
-        else if (blinkCount > blinkThreshold)
+        else if (blinkCount > blinkThreshold)*/
         {
             activity->loop();
 
