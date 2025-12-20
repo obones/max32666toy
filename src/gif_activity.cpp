@@ -168,10 +168,6 @@ static int32_t GIFReadFile(GIFFILE *pFile, uint8_t *pBuf, int32_t iLen)
     UINT iBytesRead;
     iBytesRead = iLen;
     FIL *file = static_cast<FIL *>(pFile->fHandle);
-
-    // Note: If you read a file all the way to the last byte, seek() stops working
-    /*if ((pFile->iSize - pFile->iPos) < iLen)
-        iBytesRead = pFile->iSize - pFile->iPos - 1; // <-- ugly work-around*/
     if (iBytesRead <= 0)
         return 0;
 
@@ -196,54 +192,68 @@ static int32_t GIFSeekFile(GIFFILE *pFile, int32_t iPosition)
 
 static void GIFDraw(GIFDRAW *pDraw)
 {
-    /*printf("bytes: ");
-    for (int x = 0; x < pDraw->iCanvasWidth * 3; x++)
+    CRGB pixel;
+    uint8_t *source;
+    uint8_t *p;
+    uint8_t *pPalette = (uint8_t *)pDraw->pPalette;
+
+    source = pDraw->pPixels;
+    if (pDraw->ucDisposalMethod == 2) // restore to background color
     {
-        printf("%.2x ", pDraw->pPixels[x]);
-    }
-    printf("\n");*/
+        p = &pPalette[pDraw->ucBackground * 3];
+        pixel.r = p[0];
+        pixel.g = p[1];
+        pixel.b = p[2];
 
-    printf("CRGB: ");
-    CRGB* sourcePixel = (CRGB*)pDraw->pPixels;
-    //uint8_t* sourcePixel = pDraw->pPixels;
-    CRGB* destPixel = &Display::leds[Display::Width * pDraw->y];
-    for (int x = 0; x < pDraw->iCanvasWidth; x++)
+        for (int x = 0;  x <pDraw->iWidth; x++)
+        {
+            if (source[x] == pDraw->ucTransparent)
+                Display::leds[Display::Width * pDraw->y + x] = pixel;
+        }
+        pDraw->ucHasTransparency = 0;
+    }
+
+    // Apply the new pixels to the main image
+    if (pDraw->ucHasTransparency) // if transparency used
     {
-        CRGB pixelValue = *sourcePixel;
-        /*pixelValue.r = *sourcePixel++;
-        pixelValue.g = *sourcePixel++;
-        pixelValue.b = *sourcePixel++;*/
-        //constexpr int tmp = sizeof(CRGB);
-        printf("%.2x%.2x%.2x ", pixelValue.red, pixelValue.green, pixelValue.blue);
+        const uint8_t ucTransparent = pDraw->ucTransparent;
+        for (int x = 0; x < pDraw->iWidth; x++)
+        {
+            if (source[x] != ucTransparent)
+            {
+                p = &pPalette[source[x] * 3];
+                pixel.r = p[0];
+                pixel.g = p[1];
+                pixel.b = p[2];
 
-        *destPixel = pixelValue;
-
-        sourcePixel++;
-        destPixel++;
+                Display::leds[Display::Width * pDraw->y + x] = pixel;
+            }
+        }
     }
-    printf("\n");
-}
+    else // no transparency, just copy them all
+    {
+        for (int x = 0; x < pDraw->iWidth; x++)
+        {
+            p = &pPalette[source[x] * 3];
+            pixel.r = p[0];
+            pixel.g = p[1];
+            pixel.b = p[2];
 
-// memory allocation callback function
-void* GIFAlloc(uint32_t u32Size)
-{
-    return malloc(u32Size);
-}
-
-// memory free callback function
-void GIFFree(void *p)
-{
-    free(p);
+            Display::leds[Display::Width * pDraw->y + x] = pixel;
+        }
+    }
 }
 
 bool GifActivity::loadFile(size_t index)
 {
-    gif.freeFrameBuf(GIFFree);
-
-    if (index > files.size())
+    gif.close();
+    if (index >= files.size())
         return false;
 
-    if (gif.open(("/gif/" + files[index]).c_str(), GIFOpenFile, GIFCloseFile, GIFReadFile, GIFSeekFile, GIFDraw))
+    std::string filename = "/gif/" + files[index];
+    printf("Loading %s...\n", filename.c_str());
+
+    if (gif.open(filename.c_str(), GIFOpenFile, GIFCloseFile, GIFReadFile, GIFSeekFile, GIFDraw))
     {
         if ((gif.getCanvasWidth() != Display::Width) && (gif.getCanvasHeight() != Display::Height))
         {
@@ -255,13 +265,6 @@ bool GifActivity::loadFile(size_t index)
     else
     {
         printf("Could not open gif %s: %s\n", files[index].c_str(), GIF_ERRORS[gif.getLastError()]);
-        return false;
-    }
-
-    if (gif.allocFrameBuf(GIFAlloc) != GIF_SUCCESS)
-    {
-        printf("Insufficient memory!\n");
-        gif.close();
         return false;
     }
 
@@ -313,9 +316,6 @@ void GifActivity::loop()
 {
     if (gif.getLastError() == GIF_SUCCESS)
     {
-        //gif.setFrameBuf(Display::leds);
-        gif.setDrawType(GIF_DRAW_COOKED);
-
         if (gif.playFrame(true, nullptr) == GIF_SUCCESS)
         {
             for (int y = 0; y < Display::Height; y++)
