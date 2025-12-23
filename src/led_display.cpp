@@ -10,6 +10,7 @@ void Display::init()
 
 void Display::update()
 {
+    FastLED.setBrightness(8);
     FastLED.show();
 }
 
