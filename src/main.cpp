@@ -183,7 +183,7 @@ int main(void)
     prepareOutputPin();
     prepareTimer4();
 
-    typedef struct {
+    /*typedef struct {
         uint32_t us_ticks;
         uint32_t ns_ticks;
     } Ticks;
@@ -196,9 +196,9 @@ int main(void)
         ticks[tick].ns_ticks = MXC_TMR4->cnt;
     }
     for (uint8_t tick = 0; tick < NUM_TICKS; tick++)
-        printf("%u;%u\n", ticks[tick].us_ticks, ticks[tick].ns_ticks);
+        printf("%u;%u\n", ticks[tick].us_ticks, ticks[tick].ns_ticks);*/
 
-    LED led = LED(2);
+    //LED led = LED(2);
 
     Display::init();
 
@@ -214,13 +214,6 @@ int main(void)
 
     MXC_GPIO_OutClr(MXC_GPIO0, MXC_GPIO_PIN_21);
 
-/*    printf("begin BMI160\n");
-    if (!BMI160.begin(I2C_MASTER, 0x68)) //, MXC_GPIO_PIN_11))
-    {
-        printf("BMI160 failed\n");
-        return -1;
-    }
-    printf("BMI160 id: %d\n", BMI160.getDeviceID());*/
     initBMI160();
 
     /*
@@ -232,7 +225,7 @@ int main(void)
     Activity* activity = ActivityFactory::BuildActivity(0);
 
     setPin();
-    constexpr CRGB pattern[7] = {0x00000F, 0x000F00, 0x0F0000, 0x000F0F, 0x0F000F, 0x0F0F00, 0x0F0F0F};
+    //constexpr CRGB pattern[7] = {0x00000F, 0x000F00, 0x0F0000, 0x000F0F, 0x0F000F, 0x0F0F00, 0x0F0F0F};
     while (1) {
 
         /*constexpr int delay = 50000;
@@ -246,9 +239,9 @@ int main(void)
         /*if ((MXC_TMR4->cnt % 10 == 0))
             togglePin();*/
 
-        int blinkCount = led.get_blink_count();
+        /*int blinkCount = led.get_blink_count();
         constexpr int blinkThreshold = 6;
-        /*if (blinkCount == blinkThreshold)
+        if (blinkCount == blinkThreshold)
         {
             for (int ledIndex = 0; ledIndex < NUM_LEDS; ledIndex++)
                 leds[ledIndex] = CRGB::Black;
