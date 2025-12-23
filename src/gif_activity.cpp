@@ -198,25 +198,25 @@ static void GIFDraw(GIFDRAW *pDraw)
     uint8_t *pPalette = (uint8_t *)pDraw->pPalette;
 
     source = pDraw->pPixels;
+    const uint8_t ucTransparent = pDraw->ucTransparent;
     if (pDraw->ucDisposalMethod == 2) // restore to background color
     {
         p = &pPalette[pDraw->ucBackground * 3];
-        pixel.r = p[0];
-        pixel.g = p[1];
-        pixel.b = p[2];
+        pixel.r = 0; //p[0];
+        pixel.g = 0; //p[1];
+        pixel.b = 0; //p[2];
 
         for (int x = 0;  x <pDraw->iWidth; x++)
         {
-            if (source[x] == pDraw->ucTransparent)
+            if (source[x] == ucTransparent)
                 Display::leds[Display::Width * pDraw->y + x] = pixel;
         }
-        pDraw->ucHasTransparency = 0;
+        //pDraw->ucHasTransparency = 0;
     }
 
     // Apply the new pixels to the main image
     if (pDraw->ucHasTransparency) // if transparency used
     {
-        const uint8_t ucTransparent = pDraw->ucTransparent;
         for (int x = 0; x < pDraw->iWidth; x++)
         {
             if (source[x] != ucTransparent)
