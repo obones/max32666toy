@@ -11,11 +11,13 @@
 
 class GifActivity : public Activity
 {
+    friend void BMIInterrupt(void* data);
 private:
     std::vector<std::string> files;
     FATFS fs;
     AnimatedGIF gif;
     int currentFileIndex = 0;
+    bool moveToNextFile = false;
 
     bool mounted;
 

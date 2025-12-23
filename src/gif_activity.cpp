@@ -1,5 +1,6 @@
 #include "gif_activity.h"
 #include "led_display.h"
+#include "BMI160Gen.h"
 
 extern "C"
 {
@@ -246,6 +247,8 @@ static void GIFDraw(GIFDRAW *pDraw)
 
 bool GifActivity::loadFile(size_t index)
 {
+    currentFileIndex = index;
+
     gif.close();
     if (index >= files.size())
         return false;
@@ -267,7 +270,6 @@ bool GifActivity::loadFile(size_t index)
         printf("Could not open gif %s: %s\n", files[index].c_str(), GIF_ERRORS[gif.getLastError()]);
         return false;
     }
-
     return true;
 }
 
@@ -282,6 +284,16 @@ const uint8_t SDImage[] =
     0b00101010,
     0b11001100,
 };
+
+void BMIInterrupt(void* data)
+{
+    bool status = BMI160.getIntTapStatus();
+    if (status)
+    {
+        GifActivity* activity = static_cast<GifActivity*>(data);
+        activity->moveToNextFile = true;
+    }
+}
 
 GifActivity::GifActivity()
 {
@@ -307,16 +319,27 @@ GifActivity::GifActivity()
 
     gif.begin(GIF_PALETTE_RGB888);
 
-    loadFile(currentFileIndex);
+    loadFile(0);
 
     Display::displayOneBitImage(SDImage, 0x004000);
+
+    BMI160.attachInterrupt(BMIInterrupt, this);
+    BMI160.setIntTapEnabled(true);
 }
 
 void GifActivity::loop()
 {
+    if (moveToNextFile)
+    {
+        loadFile(++currentFileIndex % files.size());
+        moveToNextFile = false;
+    }
+
     if (gif.getLastError() == GIF_SUCCESS)
     {
-        if (gif.playFrame(true, nullptr) == GIF_SUCCESS)
+        int playFrameResult = gif.playFrame(true, nullptr);
+        int lastError = gif.getLastError();
+        if ((playFrameResult > 0) || ((playFrameResult == 0) && (lastError == GIF_SUCCESS)))
         {
             for (int y = 0; y < Display::Height; y++)
             {
@@ -334,14 +357,11 @@ void GifActivity::loop()
         }
         else
         {
-            int lastError = gif.getLastError();
-            if (lastError != GIF_SUCCESS)
-                printf("could not play frame: %s\n", GIF_ERRORS[lastError]);
+            printf("could not play frame: %s\n", GIF_ERRORS[lastError]);
         }
     }
     else
     {
-        currentFileIndex++;
-        loadFile(currentFileIndex);
+        moveToNextFile = true;
     }
 }
