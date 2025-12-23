@@ -4,10 +4,10 @@ FastLED:
 A checkout of the https://github.com/obones/FastLED/tree/MAX32666 branch should be checked out in a folder named FastLED
 
 GIFReader
+A checkout of the https://github.com/obones/AnimatedGIF/tree/max32666 branch in a folder named AnimatedGIF
 
-https://github.com/bitbank2/AnimatedGIF
-https://github.com/tobozo/ESP32-GifPlayer
+BMI160 gyro+accel
+https://github.com/obones/BMI160-Arduino/tree/max32666
 
+https://how2electronics.com/interfacing-bmi160-accelerometer-gyroscope-with-arduino/
 
-https://github.com/Chlumsky/EasyGifReader
-https://github.com/Ferki-git-creator/TurboStitchGIF-HeaderOnly-Fast-ZeroAllocation-PlatformIndependent-Embedded-C-GIF-Decoder
