@@ -36,12 +36,14 @@ PROJ_CFLAGS += -DFL_ARM_NO_CYCCNT
 IPATH += include
 IPATH += libraries/FastLED/src/
 IPATH += libraries/AnimatedGIF/src/
+IPATH += libraries/BMI160-Arduino
 
 VPATH += src/
 VPATH += libraries/FastLED/src/
 VPATH += libraries/FastLED/src/fl
 VPATH += libraries/FastLED/src/platforms/arm/max32
 VPATH += libraries/AnimatedGIF/src/
+VPATH += libraries/BMI160-Arduino
 
 MFLOAT_ABI = hard
 
