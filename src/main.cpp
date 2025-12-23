@@ -35,6 +35,7 @@
 #include "mxc_sys.h"
 #include "rtc.h"
 #include "audio.h"
+#include "i2c.h"
 
 #include "Arduino.h"
 
@@ -42,6 +43,11 @@
 
 #include "activity.h"
 #include "activity_factory.h"
+
+#include "BMI160Gen.h"
+
+#define I2C_MASTER MXC_I2C0_BUS0 ///< I2C instance
+#define I2C_FREQ 100000 ///< I2C clock frequency
 
 /***** Definitions *****/
 
@@ -140,6 +146,30 @@ inline void __attribute__ ((optimize("-Ofast"))) togglePin()
     MXC_GPIO0->out ^= MXC_GPIO_PIN_12;
 }
 
+void initBMI160()
+{
+    int error = MXC_I2C_Init(I2C_MASTER, 1, 0);
+    if (error != E_NO_ERROR) {
+        printf("I2C master configure failed with error %i\n", error);
+        return;
+    }
+    error = MXC_I2C_SetFrequency(I2C_MASTER, I2C_FREQ);
+    if (error < E_NO_ERROR) {
+        printf("I2C set frequency failed with error %i\n", error);
+        return;
+    }
+
+    printf("begin BMI160\n");
+    if (!BMI160.begin(I2C_MASTER, 0x68)) //, MXC_GPIO_PIN_11))
+    {
+        printf("BMI160 failed\n");
+        return;
+    }
+
+    uint8_t pmuStatus = BMI160.getRegister(BMI160_RA_PMU_STATUS);
+    printf("BMI PMU status: 0x%.2x\n", pmuStatus);
+}
+
 int main(void)
 {
     mxc_gpio_cfg_t pinConfig = {MXC_GPIO0, MXC_GPIO_PIN_21, MXC_GPIO_FUNC_OUT, MXC_GPIO_PAD_NONE, MXC_GPIO_VSSEL_VDDIOH, MXC_GPIO_DRVSTR_3};
@@ -183,6 +213,15 @@ int main(void)
     Display::update();
 
     MXC_GPIO_OutClr(MXC_GPIO0, MXC_GPIO_PIN_21);
+
+/*    printf("begin BMI160\n");
+    if (!BMI160.begin(I2C_MASTER, 0x68)) //, MXC_GPIO_PIN_11))
+    {
+        printf("BMI160 failed\n");
+        return -1;
+    }
+    printf("BMI160 id: %d\n", BMI160.getDeviceID());*/
+    initBMI160();
 
     /*
         Note: Use printf instead of std::cout.
