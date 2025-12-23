@@ -12,6 +12,7 @@ extern "C"
     uint32_t millis();
     uint32_t micros();
     void delay(int ms);
+    void delayMicroseconds(int us);
     void yield();
 }
 

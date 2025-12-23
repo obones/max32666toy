@@ -75,6 +75,11 @@ void delay(int ms)
     MXC_Delay(MXC_DELAY_MSEC(ms));
 }
 
+void delayMicroseconds(int us)
+{
+    MXC_Delay(us);
+}
+
 void yield()
 {
     // no_op
