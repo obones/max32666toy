@@ -76,7 +76,6 @@ const uint8_t digits[6][8] =
 
 void DiceBMIInterrupt(void* data)
 {
-    printf("Interrupt\n");
     static_cast<DiceActivity*>(data)->shaken = true;
 }
 
@@ -90,11 +89,14 @@ DiceActivity::DiceActivity()
     // This is done by selecting "significant motion", meaning that the "motion" interrupt no longer is for any motion as
     // indicated in section 2.6.2 of the datasheet.
     BMI160.setSignificantMotionDetectionInterruptSelected(true);
-    BMI160.setSignificantMotionDetectionProofTime(BMI160SignificantMotionProofTime::BMI160_SIGNIFICANT_MOTION_PROOF_TIME_0_5S);
-    BMI160.setSignificantMotionDetectionSkipTime(BMI160SignificantMotionSkipTime::BMI160_SIGNIFICANT_MOTION_SKIP_TIME_3S);
+    BMI160.setSignificantMotionDetectionProofTime(BMI160SignificantMotionProofTime::BMI160_SIGNIFICANT_MOTION_PROOF_TIME_0_25S);
+    BMI160.setSignificantMotionDetectionSkipTime(BMI160SignificantMotionSkipTime::BMI160_SIGNIFICANT_MOTION_SKIP_TIME_1_5S);
     BMI160.setIntMotionEnabled(true);
 
     BMI160.attachInterrupt(DiceBMIInterrupt, this);
+
+    // force an initial draw so that the display does not stay blank
+    shaken = true;
 }
 
 void DiceActivity::loop()
@@ -104,18 +106,17 @@ void DiceActivity::loop()
         shaken = false;
 
         constexpr int faceCount = 6;
-        //uint32_t faceValues[faceCount] = {};
         int maxCount;
         int maxFaceIndex;
         do
         {
+            printf("Drawing...");
             maxFaceIndex = -1;
             maxCount = 0;
             uint32_t maxFaceValue = 0;
             for (int faceIndex = 0; faceIndex < faceCount; faceIndex++)
             {
                 uint32_t faceValue = MXC_TPU_TRNG_Read32BIT(MXC_TRNG);
-                //faceValues[faceIndex] = faceValue;
 
                 if (faceValue > maxFaceValue)
                 {
@@ -129,8 +130,16 @@ void DiceActivity::loop()
                 }
             }
         } while (maxCount != 1);
+        printf("  -> %d\n", maxFaceIndex + 1);
 
-        printf("Random draw result: %d\n", maxFaceIndex + 1);
-        Display::displayOneBitImage(digits[maxFaceIndex], CRGB::Red4);
+        // Show a dice "roll"
+        for (int loopIndex = 0; loopIndex < faceCount * 4; loopIndex++)
+        {
+            Display::displayOneBitImage(digits[loopIndex % faceCount], CRGB::Yellow4);
+            MXC_Delay(MXC_DELAY_MSEC(50));
+        }
+
+        // show the final value
+        Display::displayOneBitImage(digits[maxFaceIndex], CRGB::Green4);
     }
 }
