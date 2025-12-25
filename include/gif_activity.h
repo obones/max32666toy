@@ -11,7 +11,7 @@
 
 class GifActivity : public Activity
 {
-    friend void BMIInterrupt(void* data);
+    friend void GifBMIInterrupt(void* data);
 private:
     std::vector<std::string> files;
     FATFS fs;

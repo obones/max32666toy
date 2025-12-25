@@ -285,7 +285,7 @@ const uint8_t SDImage[] =
     0b11001100,
 };
 
-void BMIInterrupt(void* data)
+void GifBMIInterrupt(void* data)
 {
     bool status = BMI160.getIntTapStatus();
     if (status)
@@ -323,7 +323,7 @@ GifActivity::GifActivity()
 
     Display::displayOneBitImage(SDImage, 0x004000);
 
-    BMI160.attachInterrupt(BMIInterrupt, this);
+    BMI160.attachInterrupt(GifBMIInterrupt, this);
     BMI160.setIntTapEnabled(true);
 }
 
