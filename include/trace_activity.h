@@ -13,8 +13,7 @@ private:
 
     uint32_t lastMillis;
 
-    void updateDiscretization(float angle, int8_t& lastBin, uint32_t& repeat);
-    void updateCoordinate(int8_t lastBin, uint32_t& repeat, uint8_t axisSize, uint8_t& coordinate);
+    void updateCoordinate(float angle, int8_t& lastBin, uint32_t& repeat, uint8_t axisSize, uint8_t& coordinate);
 public:
     TraceActivity();
 

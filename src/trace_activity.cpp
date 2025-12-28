@@ -31,7 +31,7 @@ TraceActivity::TraceActivity()
     y = Display::Height / 2;
 }
 
-void TraceActivity::updateDiscretization(float angle, int8_t& lastBin, uint32_t& repeat)
+void TraceActivity::updateCoordinate(float angle, int8_t& lastBin, uint32_t& repeat, uint8_t axisSize, uint8_t& coordinate)
 {
     // discretize -80;80 into the bins defined above.
     constexpr float maxAngle = 80;
@@ -52,11 +52,6 @@ void TraceActivity::updateDiscretization(float angle, int8_t& lastBin, uint32_t&
         repeat++;
     }
 
-    //printf("angle: %.2f°, bin: %d, repeat: %d\n", double(angle), bin, repeat);
-}
-
-void TraceActivity::updateCoordinate(int8_t lastBin, uint32_t& repeat, uint8_t axisSize, uint8_t& coordinate)
-{
     uint8_t requiredRepeat = requiredRepeats[abs(lastBin)];
     if (requiredRepeat != 0 && repeat > requiredRepeat)
     {
@@ -93,14 +88,8 @@ void TraceActivity::loop()
     float pitch = atan2(ay_g, sqrt(ax_g * ax_g + az_g * az_g)) * 180.0 / M_PI;
     float roll = atan2(-ax_g, az_g) * 180.0 / M_PI;
 
-    // Print tilt angles
-    //printf("Pitch: %.2f°, Roll: %.2f°\n", double(pitch), double(roll));
-
-    updateDiscretization(pitch, lastPitchBin, pitchRepeat);
-    updateDiscretization(roll, lastRollBin, rollRepeat);
-
-    updateCoordinate(lastPitchBin, pitchRepeat, Display::Width, x);
-    updateCoordinate(lastRollBin, rollRepeat, Display::Height, y);
+    updateCoordinate(pitch, lastPitchBin, pitchRepeat, Display::Width, x);
+    updateCoordinate(roll, lastRollBin, rollRepeat, Display::Height, y);
 
     //printf("x: %d, y: %d\n", x, y);
 
@@ -114,6 +103,4 @@ void TraceActivity::loop()
 
     Display::setPixel(x, y, CRGB::Blue4);
     Display::update();
-
-    //delay(250);
 }
