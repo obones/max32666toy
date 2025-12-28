@@ -18,6 +18,7 @@ public:
     static void update();
 
     static void displayOneBitImage(const uint8_t* bits, CRGB color);
+    static void setPixel(uint8_t x, uint8_t y, CRGB color);
 };
 
 #endif

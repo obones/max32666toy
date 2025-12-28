@@ -39,3 +39,8 @@ void Display::displayOneBitImage(const uint8_t* bits, CRGB color)
     update();
 }
 
+void Display::setPixel(uint8_t x, uint8_t y, CRGB color)
+{
+    leds[y * Width + x] = color;
+}
+
