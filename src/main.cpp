@@ -28,6 +28,7 @@
 /***** Includes *****/
 #include <stdio.h>
 #include <stdint.h>
+#include <cstdlib>
 #include "mxc_device.h"
 #include "led.h"
 #include "board.h"
@@ -36,6 +37,9 @@
 #include "rtc.h"
 #include "audio.h"
 #include "i2c.h"
+#include "adc.h"
+#include "adc_regs.h"
+#include <nvic_table.h>
 
 #include "Arduino.h"
 
@@ -170,6 +174,135 @@ void initBMI160()
     printf("BMI PMU status: 0x%.2x\n", pmuStatus);
 }
 
+void startBrightnessLevelRead()
+{
+    // Can't use MXC_ADC_StartConversion(MXC_ADC_CH_0); as it is waiting for adc to become inactive where we want to poll the status later on
+
+    // Clear ADC done interrupt flag
+    MXC_ADC_ClearFlags(MXC_F_ADC_INTR_DONE_IF);
+
+    // Set start bit
+    MXC_ADC->ctrl |= MXC_F_ADC_CTRL_START;
+}
+
+void initBrightnessLevelRead()
+{
+    int error = MXC_ADC_Init();
+    if (error != E_NO_ERROR)
+        printf("MXC_ADC_Init failed with error %i\n", error);
+
+    MXC_GPIO_Config(&gpio_cfg_adc0);
+
+    // We are measuring a voltage that goes from 0V to the full 3.3V.
+    // We thus decided to use the unscaled 1.22V internal band-gap reference (ADC_CTRL.ref_sel = 0)
+    // which means that we should divide the input by 3 (ADC_CTRL.adc_divsel = 0x2) to get a maximum value
+    // of 1.1V and thus avoid overflows.
+    // But real world experience showed that we overflowed at midpoint!
+    // So, for some weird reason, we actually have to further scale the input by two (ADC_CTRL.scale = 1)
+    // in order to get our entire voltage scale properly.
+    // Note: as the divisions gets us a voltage value just below 1.22V, we go from 0 to 234
+
+    // clear required flags
+    MXC_ADC->ctrl &= ~(
+        MXC_F_ADC_CTRL_CH_SEL |      // reset channel selection
+        MXC_F_ADC_CTRL_REF_SCALE |   // do not scale reference
+        MXC_F_ADC_CTRL_REF_SEL       // use internal band-gap reference
+    );
+
+    // set required flags for conversion
+    MXC_ADC->ctrl |=
+        MXC_F_ADC_CTRL_DATA_ALIGN |        // MSB align to get 8bit conversion for free
+        MXC_S_ADC_CTRL_ADC_DIVSEL_DIV3 |   // divide 3.3v by 3 to be just below the 1.22V band gap reference
+        MXC_F_ADC_CTRL_SCALE |             // scale input (see above)
+        ((0 << MXC_F_ADC_CTRL_CH_SEL_POS) & MXC_F_ADC_CTRL_CH_SEL); // convert on channel 0
+
+    printf("ADC initialized\n");
+
+    startBrightnessLevelRead();
+}
+
+bool brightnessLevelReady(uint8_t& value)
+{
+    bool result = ((MXC_ADC->status & MXC_F_ADC_STATUS_ACTIVE) == 0) && (MXC_ADC->intr & MXC_F_ADC_INTR_DONE_IF);
+    if (result)
+    {
+        value = *(((uint8_t*)&(MXC_ADC->data)) + 1);
+    }
+
+    return result;
+}
+
+volatile bool activityChanged = true;
+
+static void activitySelectorISR()
+{
+    activityChanged = true;
+
+    MXC_GPIO0->int_clr = MXC_GPIO_PIN_4;
+}
+
+void initActivitySelector()
+{
+    mxc_gpio_cfg_t pinConfig =
+    {
+        MXC_GPIO0,
+        MXC_GPIO_PIN_0 | MXC_GPIO_PIN_1 | MXC_GPIO_PIN_2 | MXC_GPIO_PIN_4,
+        MXC_GPIO_FUNC_IN,
+        MXC_GPIO_PAD_NONE,
+        MXC_GPIO_VSSEL_VDDIOH,
+        MXC_GPIO_DRVSTR_3
+    };
+    MXC_GPIO_Config(&pinConfig);
+
+    mxc_gpio_cfg_t interruptPinConfig =
+    {
+        MXC_GPIO0,
+        MXC_GPIO_PIN_4,
+        MXC_GPIO_FUNC_IN,
+        MXC_GPIO_PAD_NONE,
+        MXC_GPIO_VSSEL_VDDIOH,
+        MXC_GPIO_DRVSTR_3
+    };
+    int error;
+    error = MXC_GPIO_Config(&interruptPinConfig);
+    if (error != E_NO_ERROR)
+        printf("MXC_ADC_Init failed with error %i\n", error);
+
+    // The GPIO demo shows usage of MXC_GPIO_RegisterCallback but we could not get it to work at all so we use
+    // the tried and tested MXC_NVIC_SetVector calls
+    constexpr IRQn_Type gpioIrqNumber = GPIO0_IRQn;
+
+    NVIC_ClearPendingIRQ(gpioIrqNumber);
+    NVIC_DisableIRQ(gpioIrqNumber);
+    MXC_NVIC_SetVector(gpioIrqNumber, activitySelectorISR);
+    NVIC_SetPriority(gpioIrqNumber, 0);
+
+    interruptPinConfig.port->int_en = 0;
+    interruptPinConfig.port->int_clr = interruptPinConfig.mask;
+
+    // We ask for "rising" but it seems it does not care as we get an interrupt when 74HC148 E0 goes to 0
+    // making us read a register value of the form 0x07 which should not happen.
+    MXC_GPIO_IntConfig(&interruptPinConfig, MXC_GPIO_INT_RISING);
+
+    MXC_GPIO_EnableInt(interruptPinConfig.port, interruptPinConfig.mask);
+
+    NVIC_EnableIRQ(gpioIrqNumber);
+
+    printf("Selector initialized\n");
+}
+
+int8_t readActivitySelector()
+{
+    uint32_t portValue = MXC_GPIO_InGet(MXC_GPIO0, MXC_GPIO_PIN_0 | MXC_GPIO_PIN_1 | MXC_GPIO_PIN_2 | MXC_GPIO_PIN_4);
+
+    printf("portValue: %X\n", portValue);
+
+    if (portValue & MXC_GPIO_PIN_4)
+        return (portValue & 0x07);
+    else
+        return -1;
+}
+
 int main(void)
 {
     mxc_gpio_cfg_t pinConfig = {MXC_GPIO0, MXC_GPIO_PIN_21, MXC_GPIO_FUNC_OUT, MXC_GPIO_PAD_NONE, MXC_GPIO_VSSEL_VDDIOH, MXC_GPIO_DRVSTR_3};
@@ -215,6 +348,8 @@ int main(void)
     MXC_GPIO_OutClr(MXC_GPIO0, MXC_GPIO_PIN_21);
 
     initBMI160();
+    initBrightnessLevelRead();
+    initActivitySelector();
 
     /*
         Note: Use printf instead of std::cout.
@@ -225,8 +360,27 @@ int main(void)
     Activity* activity = ActivityFactory::BuildActivity(0);
 
     setPin();
+    uint8_t previousBrightness = 0;
     //constexpr CRGB pattern[7] = {0x00000F, 0x000F00, 0x0F0000, 0x000F0F, 0x0F000F, 0x0F0F00, 0x0F0F0F};
     while (1) {
+        uint8_t newBrightness;
+        if (brightnessLevelReady(newBrightness))
+        {
+            if (abs(newBrightness - previousBrightness) > 3)
+            {
+                previousBrightness = newBrightness;
+                printf("Brightness read: %d\n", newBrightness);
+            }
+            // start next read
+            startBrightnessLevelRead();
+        }
+
+        if (activityChanged)
+        {
+            int8_t activityIndex = readActivitySelector();
+            printf("Activity index: %d\n", activityIndex);
+            activityChanged = false;
+        }
 
         /*constexpr int delay = 50000;
         led.on();
