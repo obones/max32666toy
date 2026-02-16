@@ -357,7 +357,22 @@ int main(void)
         function is better optimized for micro-controllers with limited flash
     */
 
-    Activity* activity = ActivityFactory::BuildActivity(0);
+    Activity* activity = nullptr;
+
+    /*typedef void (*LoopPtr)(Activity*);
+    LoopPtr loopPtr = activity->*loop;
+
+    // https://www.codeproject.com/articles/The-Impossibly-Fast-Cplusplus-Delegates-Fixed#comments-section
+    // https://www.codeproject.com/articles/The-Impossibly-Fast-C-Delegates#comments-section
+    // https://www.codeproject.com/articles/Fast-C-Delegate-Boost-Function-drop-in-replacement#comments-section
+
+    loopPtr(activity);*/
+/*
+    typedef void (*LoopPtr)(Activity*);
+    auto a = (*activity);
+
+    LoopPtr loopPtr = (LoopPtr)(activity->*loop);
+    loopPtr(activity);*/
 
     setPin();
     uint8_t previousBrightness = 0;
@@ -380,6 +395,9 @@ int main(void)
             int8_t activityIndex = readActivitySelector();
             printf("Activity index: %d\n", activityIndex);
             activityChanged = false;
+
+            delete activity;
+            activity = ActivityFactory::BuildActivity(activityIndex);
         }
 
         /*constexpr int delay = 50000;
