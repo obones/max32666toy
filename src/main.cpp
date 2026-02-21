@@ -359,6 +359,13 @@ int main(void)
         function is better optimized for micro-controllers with limited flash
     */
 
+/*
+    // Virtual method address storage experiment
+
+    // https://www.codeproject.com/articles/The-Impossibly-Fast-Cplusplus-Delegates-Fixed#comments-section
+    // https://www.codeproject.com/articles/The-Impossibly-Fast-C-Delegates#comments-section
+    // https://www.codeproject.com/articles/Fast-C-Delegate-Boost-Function-drop-in-replacement#comments-section
+    // https://gist.github.com/vittorioromeo/6462221
 
     EmptyActivity* emptyActivity = new EmptyActivity(0);
 
@@ -391,25 +398,10 @@ int main(void)
     uint32_t saDelegateEndMicros = micros();
     printf("SA delegate duration: %d us\n", saDelegateEndMicros - saDelegateStartMicros);
 
-    delete emptyActivity;
+    delete emptyActivity;*/
 
     Activity* activity = nullptr;
-
-    /*typedef void (*LoopPtr)(Activity*);
-    LoopPtr loopPtr = activity->*loop;
-
-    // https://www.codeproject.com/articles/The-Impossibly-Fast-Cplusplus-Delegates-Fixed#comments-section
-    // https://www.codeproject.com/articles/The-Impossibly-Fast-C-Delegates#comments-section
-    // https://www.codeproject.com/articles/Fast-C-Delegate-Boost-Function-drop-in-replacement#comments-section
-    // https://gist.github.com/vittorioromeo/6462221
-
-    loopPtr(activity);*/
-/*
-    typedef void (*LoopPtr)(Activity*);
-    auto a = (*activity);
-
-    LoopPtr loopPtr = (LoopPtr)(activity->*loop);
-    loopPtr(activity);*/
+    LoopDelegate loopDelegate;
 
     setPin();
     uint8_t previousBrightness = 0;
@@ -435,6 +427,7 @@ int main(void)
 
             delete activity;
             activity = ActivityFactory::BuildActivity(activityIndex);
+            loopDelegate = activity->getLoopDelegate();
         }
 
         /*constexpr int delay = 50000;
@@ -460,7 +453,8 @@ int main(void)
         }
         else if (blinkCount > blinkThreshold)*/
         {
-            activity->loop();
+            loopDelegate();
+            //activity->loop();
 
             /*CRGB lastLedValue = leds[NUM_LEDS - 1];
             for (int ledIndex = NUM_LEDS - 1; ledIndex > 0; ledIndex--)

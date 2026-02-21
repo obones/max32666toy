@@ -10,4 +10,6 @@ public:
     DiceActivity();
 
     void loop();
+
+    LoopDelegate getLoopDelegate();
 };

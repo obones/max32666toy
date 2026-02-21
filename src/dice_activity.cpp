@@ -143,3 +143,8 @@ void DiceActivity::loop()
         Display::displayOneBitImage(digits[maxFaceIndex], CRGB::Green4);
     }
 }
+
+LoopDelegate DiceActivity::getLoopDelegate()
+{
+    return LoopDelegate::from_method<DiceActivity, &DiceActivity::loop>(this);
+}

@@ -104,3 +104,8 @@ void TraceActivity::loop()
     Display::setPixel(x, y, CRGB::Blue4);
     Display::update();
 }
+
+LoopDelegate TraceActivity::getLoopDelegate()
+{
+    return LoopDelegate::from_method<TraceActivity, &TraceActivity::loop>(this);
+}

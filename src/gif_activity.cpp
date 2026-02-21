@@ -365,3 +365,8 @@ void GifActivity::loop()
         moveToNextFile = true;
     }
 }
+
+LoopDelegate GifActivity::getLoopDelegate()
+{
+    return LoopDelegate::from_method<GifActivity, &GifActivity::loop>(this);
+}

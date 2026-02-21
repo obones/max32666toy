@@ -18,4 +18,6 @@ public:
     TraceActivity();
 
     void loop();
+
+    LoopDelegate getLoopDelegate();
 };

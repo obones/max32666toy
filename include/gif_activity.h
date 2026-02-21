@@ -29,6 +29,8 @@ public:
     GifActivity();
 
     void loop();
+
+    LoopDelegate getLoopDelegate();
 };
 
 #endif
