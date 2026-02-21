@@ -404,7 +404,7 @@ int main(void)
     LoopDelegate loopDelegate;
 
     setPin();
-    uint8_t previousBrightness = 0;
+    uint8_t previousBrightness = Display::getBrightness();
     //constexpr CRGB pattern[7] = {0x00000F, 0x000F00, 0x0F0000, 0x000F0F, 0x0F000F, 0x0F0F00, 0x0F0F0F};
     while (1) {
         uint8_t newBrightness;
@@ -414,6 +414,8 @@ int main(void)
             {
                 previousBrightness = newBrightness;
                 printf("Brightness read: %d\n", newBrightness);
+                Display::setBrightness(newBrightness);
+                Display::update();
             }
             // start next read
             startBrightnessLevelRead();

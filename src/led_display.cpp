@@ -10,8 +10,17 @@ void Display::init()
 
 void Display::update()
 {
-    FastLED.setBrightness(8);
     FastLED.show();
+}
+
+uint8_t Display::getBrightness()
+{
+    return FastLED.getBrightness();
+}
+
+void Display::setBrightness(uint8_t value)
+{
+    FastLED.setBrightness(value);
 }
 
 void Display::displayOneBitImage(const uint8_t* bits, CRGB color)

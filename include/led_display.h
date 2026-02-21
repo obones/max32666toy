@@ -16,6 +16,8 @@ public:
 
     static void init();
     static void update();
+    static uint8_t getBrightness();
+    static void setBrightness(uint8_t value);
 
     static void displayOneBitImage(const uint8_t* bits, CRGB color);
     static void setPixel(uint8_t x, uint8_t y, CRGB color);
