@@ -50,6 +50,8 @@
 
 #include "BMI160Gen.h"
 
+#include "empty_activity.h"
+
 #define I2C_MASTER MXC_I2C0_BUS0 ///< I2C instance
 #define I2C_FREQ 100000 ///< I2C clock frequency
 
@@ -357,6 +359,40 @@ int main(void)
         function is better optimized for micro-controllers with limited flash
     */
 
+
+    EmptyActivity* emptyActivity = new EmptyActivity(0);
+
+    constexpr int loopCount = 50000;
+
+    uint32_t startMicros = micros();
+    for(int i = 0; i < loopCount; i++)
+        emptyActivity->loop();
+    uint32_t endMicros = micros();
+    printf("virtual duration: %d us\n", endMicros - startMicros);
+
+    LoopDelegate d = emptyActivity->getLoopMethod();
+    uint32_t delegateStartMicros = micros();
+    for(int i = 0; i < loopCount; i++)
+        d();
+    uint32_t delegateEndMicros = micros();
+    printf("delegate duration: %d us\n", delegateEndMicros - delegateStartMicros);
+
+    FFLoopDelegate ffD = emptyActivity->getFFLoopMethod();
+    uint32_t ffDelegateStartMicros = micros();
+    for(int i = 0; i < loopCount; i++)
+        ffD();
+    uint32_t ffDelegateEndMicros = micros();
+    printf("FF delegate duration: %d us\n", ffDelegateEndMicros - ffDelegateStartMicros);
+
+    SALoopDelegate saD = emptyActivity->getSALoopMethod();
+    uint32_t saDelegateStartMicros = micros();
+    for(int i = 0; i < loopCount; i++)
+        saD();
+    uint32_t saDelegateEndMicros = micros();
+    printf("SA delegate duration: %d us\n", saDelegateEndMicros - saDelegateStartMicros);
+
+    delete emptyActivity;
+
     Activity* activity = nullptr;
 
     /*typedef void (*LoopPtr)(Activity*);
@@ -365,6 +401,7 @@ int main(void)
     // https://www.codeproject.com/articles/The-Impossibly-Fast-Cplusplus-Delegates-Fixed#comments-section
     // https://www.codeproject.com/articles/The-Impossibly-Fast-C-Delegates#comments-section
     // https://www.codeproject.com/articles/Fast-C-Delegate-Boost-Function-drop-in-replacement#comments-section
+    // https://gist.github.com/vittorioromeo/6462221
 
     loopPtr(activity);*/
 /*

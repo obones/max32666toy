@@ -33,10 +33,16 @@
 # PROJ_CFLAGS += -DMSDK_NO_GPIO_CLK_INIT
 PROJ_CFLAGS += -DFL_ARM_NO_CYCCNT
 
+# PROJ_CFLAGS += -Wno-pmf-conversions
+
 IPATH += include
 IPATH += libraries/FastLED/src/
 IPATH += libraries/AnimatedGIF/src/
 IPATH += libraries/BMI160-Arduino
+IPATH += libraries/CppDelegates
+IPATH += libraries/fd_delegate/include
+IPATH += libraries/sr_delegates/include
+IPATH += libraries/FastFunc
 
 VPATH += src/
 VPATH += libraries/FastLED/src/

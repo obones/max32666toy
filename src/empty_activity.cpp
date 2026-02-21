@@ -1,6 +1,8 @@
 #include "empty_activity.h"
 #include "led_display.h"
 
+#include <stdio.h>
+
 const uint8_t digits[9][8] =
 {
     {
@@ -117,7 +119,39 @@ EmptyActivity::EmptyActivity(int index)
         Display::displayOneBitImage(digits[index], CRGB::Red4);
 }
 
+LoopDelegate EmptyActivity::getLoopMethod()
+{
+    auto tmp = LoopDelegate::from_method<EmptyActivity, &EmptyActivity::nonVirtualLoop>(this);
+
+    return tmp;
+}
+
+FFLoopDelegate EmptyActivity::getFFLoopMethod()
+{
+    FFLoopDelegate tmp(this, &EmptyActivity::nonVirtualLoop);
+    return tmp;
+}
+
+SALoopDelegate EmptyActivity::getSALoopMethod()
+{
+    auto tmp = SALoopDelegate::create<EmptyActivity, &EmptyActivity::nonVirtualLoop>(this);
+    return tmp;
+}
+
+/*void EmptyActivity::getLoopMethod()
+{
+    typedef void (*loopPtr)(Activity *);
+    loopPtr tmp2 = static_cast<void*>(loop);
+    auto tmp = loop;
+}*/
+
 void EmptyActivity::loop()
 {
-
+    //printf("virtual loop\t");
 }
+
+void EmptyActivity::nonVirtualLoop()
+{
+    //printf("non virtual loop\t");
+}
+
