@@ -11,3 +11,7 @@ A checkout of the https://github.com/obones/BMI160-Arduino/tree/max32666 branch 
 
 https://how2electronics.com/interfacing-bmi160-accelerometer-gyroscope-with-arduino/
 
+sr_delegates
+An unzip of the content found in the following article: https://www.codeproject.com/articles/The-Impossibly-Fast-C-Delegates
+
+
