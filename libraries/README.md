@@ -4,7 +4,7 @@ FastLED:
 A checkout of the https://github.com/obones/FastLED/tree/MAX32666 branch should be checked out in a folder named FastLED
 
 LEDMatrix:
-A checkout of the https://github.com/Jorgen-VikingGod/LEDMatrix project in a folder named LEDMatrix
+A checkout of the https://github.com/obones/LEDMatrix/tree/MAX32666 branch should be placed in a folder named LEDMatrix
 
 GIFReader
 A checkout of the https://github.com/obones/AnimatedGIF/tree/max32666 branch in a folder named AnimatedGIF
