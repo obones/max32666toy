@@ -96,7 +96,7 @@ void TraceActivity::loop()
     if (millis() - lastMillis > 250)
     {
         for(int ledIndex = 0; ledIndex < Display::Height * Display::Width; ledIndex++)
-            Display::leds[ledIndex].fadeToBlackBy(32);
+            Display::leds[ledIndex]->fadeToBlackBy(32);
 
         lastMillis = millis();
     }

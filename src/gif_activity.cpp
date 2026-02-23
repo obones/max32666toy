@@ -210,7 +210,7 @@ static void GIFDraw(GIFDRAW *pDraw)
         for (int x = 0;  x <pDraw->iWidth; x++)
         {
             if (source[x] == ucTransparent)
-                Display::leds[Display::Width * pDraw->y + x] = pixel;
+                Display::leds(x, pDraw->y) = pixel;
         }
         //pDraw->ucHasTransparency = 0;
     }
@@ -227,7 +227,7 @@ static void GIFDraw(GIFDRAW *pDraw)
                 pixel.g = p[1];
                 pixel.b = p[2];
 
-                Display::leds[Display::Width * pDraw->y + x] = pixel;
+                Display::leds(x, pDraw->y) = pixel;
             }
         }
     }
@@ -240,7 +240,7 @@ static void GIFDraw(GIFDRAW *pDraw)
             pixel.g = p[1];
             pixel.b = p[2];
 
-            Display::leds[Display::Width * pDraw->y + x] = pixel;
+            Display::leds(x, pDraw->y) = pixel;
         }
     }
 }
@@ -345,7 +345,7 @@ void GifActivity::loop()
             {
                 for (int x = 0; x < Display::Width; x++)
                 {
-                    CRGB pixelValue = Display::leds[y * Display::Width + x];
+                    CRGB pixelValue = Display::leds(x, y);
                     printf("%.2x%.2x%.2x ", pixelValue.red, pixelValue.green, pixelValue.blue);
                 }
 

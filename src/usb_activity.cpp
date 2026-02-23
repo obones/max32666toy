@@ -77,10 +77,15 @@ void cdc_task(void)
                                 auto display = message->display();
                                 auto content = display->content();
 
-                                for (int ledIndex = 0; ledIndex < NUM_LEDS; ledIndex++)
+                                int ledIndex = 0;
+                                for (int y = 0; y < Display::Height; y++)
                                 {
-                                    auto contentPixel = (*content)[ledIndex];
-                                    Display::leds[ledIndex].setRGB(contentPixel->r(), contentPixel->g(), contentPixel->b());
+                                    for (int x = 0; x < Display::Width; x++)
+                                    {
+                                        auto contentPixel = (*content)[ledIndex];
+                                        Display::leds(x, y).setRGB(contentPixel->r(), contentPixel->g(), contentPixel->b());
+                                        ledIndex++;
+                                    }
                                 }
                                 Display::update();
 

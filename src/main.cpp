@@ -337,10 +337,9 @@ int main(void)
 
     Display::init();
 
-    CRGB* leds = Display::leds;
     for (int i = 0; i < NUM_LEDS; i++)
     {
-        leds[i] = 0x00000F << ((i % 3) * 8);
+        Display::leds(i) = 0x00000F << ((i % 3) * 8);
     }
 
     MXC_GPIO_OutSet(MXC_GPIO0, MXC_GPIO_PIN_21);

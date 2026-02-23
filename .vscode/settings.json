@@ -40,6 +40,7 @@
         "${workspaceFolder}",
         "${workspaceFolder}/**",
         "${workspaceFolder}/libraries/flatbuffers/include",
+        "${workspaceFolder}/libraries/LEDMatrix",
         "${config:MAXIM_PATH}/Libraries/Boards/${config:target}/Include",
         "${config:MAXIM_PATH}/Libraries/Boards/${config:target}/${config:board}/Include",
         "${config:MAXIM_PATH}/Libraries/CMSIS/Device/Maxim/${config:target}/Include",

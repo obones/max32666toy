@@ -1,11 +1,11 @@
 #include "led_display.h"
 #include "FastLED.h"
 
-CRGB Display::leds[NUM_LEDS] = {};
+cLEDMatrix<-Display::Width, -Display::Height, HORIZONTAL_MATRIX> Display::leds = {};
 
 void Display::init()
 {
-    FastLED.addLeds<WS2812B, 12, GRB>(leds, NUM_LEDS);
+    FastLED.addLeds<WS2812B, 12, GRB>(leds[0], NUM_LEDS);
 }
 
 void Display::update()
@@ -26,23 +26,20 @@ void Display::setBrightness(uint8_t value)
 void Display::displayOneBitImage(const uint8_t* bits, CRGB color)
 {
     uint8_t currentByte = *bits;
-    int pixelIndex = 0;
-    while(pixelIndex < NUM_LEDS)
+    for (int y = 0; y < Height; y++)
     {
-        if (currentByte & 0x80)
-            leds[pixelIndex] = color;
-        else
-            leds[pixelIndex] = CRGB::Black;
-
-        currentByte <<= 1;
-
-        pixelIndex++;
-
-        if (pixelIndex % 8 == 0)
+        for (int x = 0; x < Width; x++)
         {
-            bits++;
-            currentByte = *bits;
+            if (currentByte & 0x80)
+                leds(x, y) = color;
+            else
+                leds(x, y) = CRGB::Black;
+
+            currentByte <<= 1;
         }
+
+        bits++;
+        currentByte = *bits;
     }
 
     update();
@@ -50,6 +47,6 @@ void Display::displayOneBitImage(const uint8_t* bits, CRGB color)
 
 void Display::setPixel(uint8_t x, uint8_t y, CRGB color)
 {
-    leds[y * Width + x] = color;
+    leds(x, y) = color;
 }
 

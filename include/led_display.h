@@ -1,6 +1,9 @@
 #ifndef LED_DISPLAY_H
 #define LED_DISPLAY_H
+
 #include <FastLED.h>
+#include <LEDMatrix.h>
+
 #define NUM_LEDS Display::Width * Display::Height
 
 class Display
@@ -12,7 +15,7 @@ public:
     static constexpr uint8_t Height = 8;
 
     // direct access, be careful what you do with this
-    static CRGB leds[NUM_LEDS];
+    static cLEDMatrix<-Display::Width, -Display::Height, HORIZONTAL_MATRIX> leds;
 
     static void init();
     static void update();
