@@ -1,0 +1,23 @@
+namespace e14toy;
+
+struct Pixel
+{
+    r: ubyte;
+    g: ubyte;
+    b: ubyte;
+}
+
+struct Display
+{
+    content: [Pixel:64];
+}
+
+enum MessageId: byte { FullDisplay }
+
+table Message
+{
+    id: MessageId;
+    display: Display;
+}
+
+root_type Message;

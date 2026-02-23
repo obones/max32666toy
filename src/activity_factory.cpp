@@ -3,6 +3,7 @@
 #include "gif_activity.h"
 #include "dice_activity.h"
 #include "trace_activity.h"
+#include "usb_activity.h"
 #include "empty_activity.h"
 
 Activity* ActivityFactory::BuildActivity(int index)
@@ -15,6 +16,8 @@ Activity* ActivityFactory::BuildActivity(int index)
             return new DiceActivity();
         case 2:
             return new TraceActivity();
+        case 3:
+            return new USBActivity();
         default:
             return new EmptyActivity(index);
     }

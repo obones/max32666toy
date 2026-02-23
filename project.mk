@@ -39,10 +39,8 @@ IPATH += include
 IPATH += libraries/FastLED/src/
 IPATH += libraries/AnimatedGIF/src/
 IPATH += libraries/BMI160-Arduino
-IPATH += libraries/CppDelegates
-IPATH += libraries/fd_delegate/include
 IPATH += libraries/sr_delegates/include
-IPATH += libraries/FastFunc
+IPATH += libraries/flatbuffers/include
 
 VPATH += src/
 VPATH += libraries/FastLED/src/
@@ -58,6 +56,10 @@ LIB_SDHC = 1
 
 # Use FatFS version R0.15
 FATFS_VERSION = ff15
+
+# Enable TinyUSB library and tell it to use the configuration from the current folder
+LIB_TINYUSB = 1
+TINYUSB_CONFIG_DIR = ./include
 
 # **********************************************************
 
