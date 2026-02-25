@@ -23,6 +23,11 @@ void Display::setBrightness(uint8_t value)
     FastLED.setBrightness(value);
 }
 
+void Display::clear()
+{
+    FastLED.clear();
+}
+
 void Display::displayOneBitImage(const uint8_t* bits, CRGB color)
 {
     uint8_t currentByte = *bits;
