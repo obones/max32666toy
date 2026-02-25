@@ -88,8 +88,8 @@ void TraceActivity::loop()
     float pitch = atan2(ay_g, sqrt(ax_g * ax_g + az_g * az_g)) * 180.0 / M_PI;
     float roll = atan2(-ax_g, az_g) * 180.0 / M_PI;
 
-    updateCoordinate(pitch, lastPitchBin, pitchRepeat, Display::Width, x);
-    updateCoordinate(roll, lastRollBin, rollRepeat, Display::Height, y);
+    updateCoordinate(roll, lastRollBin, rollRepeat, Display::Height, x);
+    updateCoordinate(pitch, lastPitchBin, pitchRepeat, Display::Width, y);
 
     //printf("x: %d, y: %d\n", x, y);
 
