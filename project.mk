@@ -41,6 +41,7 @@ IPATH += libraries/AnimatedGIF/src/
 IPATH += libraries/BMI160-Arduino
 IPATH += libraries/sr_delegates/include
 IPATH += libraries/flatbuffers/include
+IPATH += libraries/LEDMatrix
 
 VPATH += src/
 VPATH += libraries/FastLED/src/
@@ -48,6 +49,7 @@ VPATH += libraries/FastLED/src/fl
 VPATH += libraries/FastLED/src/platforms/arm/max32
 VPATH += libraries/AnimatedGIF/src/
 VPATH += libraries/BMI160-Arduino
+VPATH += libraries/LEDMatrix
 
 MFLOAT_ABI = hard
 
@@ -60,6 +62,7 @@ FATFS_VERSION = ff15
 # Enable TinyUSB library and tell it to use the configuration from the current folder
 LIB_TINYUSB = 1
 TINYUSB_CONFIG_DIR = ./include
+
 
 # **********************************************************
 

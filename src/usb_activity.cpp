@@ -8,18 +8,26 @@
 
 #include "mxc_device.h"
 #include "mxc_sys.h"
-#include "usbhs_regs.h"
+#include <nvic_table.h>
 
 #include "led_display.h"
+
+//--------------------------------------------------------------------+
+// Forward USB interrupt events to TinyUSB IRQ Handler
+// Note: because we are in a cpp file, the "weak" link won't happen and
+//       we either have to 'extern "C"' it or call MXC_NVIC_SetVector
+//       to register it. The latter was chosen for clarity.
+//--------------------------------------------------------------------+
+void USB_IRQHandler(void)
+{
+    tud_int_handler(0);
+}
 
 //------------------------------------------------------------------------------
 // Wrapper functions to bridge TinyUSB BSP with MSDK BSP
 //------------------------------------------------------------------------------
 void board_init(void)
 {
-    // 1ms tick timer
-//    SysTick_Config(SystemCoreClock / 1000);
-
     // Startup the HIRC96M clock if it's not on already
     if (!(MXC_GCR->clkcn & MXC_F_GCR_CLKCN_HIRC96M_EN)) {
         MXC_GCR->clkcn |= MXC_F_GCR_CLKCN_HIRC96M_EN;
@@ -27,13 +35,8 @@ void board_init(void)
 
     MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_USB);
 
-    // allow High Speed USB and connect the D+/D- lines
-    MXC_USBHS->power |= MXC_F_USBHS_POWER_HS_ENABLE | MXC_F_USBHS_POWER_SOFTCONN;
-}
-
-uint32_t board_millis(void)
-{
-    return millis();
+    MXC_NVIC_SetVector(USB_IRQn, USB_IRQHandler);
+    NVIC_EnableIRQ(USB_IRQn);
 }
 
 //--------------------------------------------------------------------+
@@ -59,6 +62,7 @@ void cdc_task(void)
             uint32_t count = tud_cdc_read(&bufferSize, sizeof(bufferSize));
             if (count == sizeof(bufferSize))
             {
+                printf("Received %d bytes, bufferSize is %d\n", count, bufferSize);
                 if (bufferSize < 5*1024)
                 {
                     // read data
@@ -92,40 +96,32 @@ void cdc_task(void)
                                 break;
                             }
                             default:
-                                printf("Unknown message id : %d", messageId);
+                                printf("Unknown message id : %d\n", messageId);
                                 break;
                         }
 
-                        constexpr char const * reply = "Received buffer";
-                        send_cdc_reply(reply, sizeof(reply));
+                        constexpr char const * reply = "Received buffer\n";
+                        send_cdc_reply(reply, strlen(reply) * sizeof(reply[0]));
                     }
                     else
                     {
-                        constexpr char const * reply = "Buffer too small";
-                        send_cdc_reply(reply, sizeof(reply));
+                        constexpr char const * reply = "Buffer too small\n";
+                        send_cdc_reply(reply, strlen(reply) * sizeof(reply[0]));
                     }
                 }
                 else
                 {
-                    printf("unexpectedly large buffer (%d)", bufferSize);
+                    printf("unexpectedly large buffer (%d)\n", bufferSize);
                 }
             }
             else
             {
-                printf("Only read %d bytes instead of %d for count", count, sizeof(bufferSize));
-                constexpr char const * reply = "Wrong count size in buffer";
-                send_cdc_reply(reply, sizeof(reply));
+                printf("Only read %d bytes instead of %d for count\n", count, sizeof(bufferSize));
+                constexpr char const * reply = "Wrong count size in buffer\n";
+                send_cdc_reply(reply, strlen(reply) * sizeof(reply[0]));
             }
         }
     }
-}
-
-//--------------------------------------------------------------------+
-// Forward USB interrupt events to TinyUSB IRQ Handler
-//--------------------------------------------------------------------+
-void USB_IRQHandler(void)
-{
-    tud_int_handler(0);
 }
 
 //--------------------------------------------------------------------+
