@@ -61,7 +61,11 @@
         "${config:MAXIM_PATH}/Libraries/MiscDrivers/EEPROM",
         "${config:MAXIM_PATH}/Libraries/MiscDrivers/CODEC",
         "${config:MAXIM_PATH}/Libraries/tinyusb/src",
-        "${config:MAXIM_PATH}/Libraries/tinyusb/hw"
+        "${config:MAXIM_PATH}/Libraries/tinyusb/hw",
+        "${config:MAXIM_PATH}/Libraries/MaxUSB/include/core",
+        "${config:MAXIM_PATH}/Libraries/MaxUSB/include/core/musbhsfc",
+        "${config:MAXIM_PATH}/Libraries/MaxUSB/include/devclass",
+        "${config:MAXIM_PATH}/Libraries/MaxUSB/include/enumerate"
     ],
     "C_Cpp.default.browse.path": [
         "${workspaceFolder}",
@@ -82,7 +86,11 @@
         "${config:MAXIM_PATH}/Libraries/MiscDrivers/EEPROM",
         "${config:MAXIM_PATH}/Libraries/MiscDrivers/CODEC",
         "${config:MAXIM_PATH}/Libraries/tinyusb/src",
-        "${config:MAXIM_PATH}/Libraries/tinyusb/hw"
+        "${config:MAXIM_PATH}/Libraries/tinyusb/hw",
+        "${config:MAXIM_PATH}/Libraries/MaxUSB/include/core",
+        "${config:MAXIM_PATH}/Libraries/MaxUSB/include/core/musbhsfc",
+        "${config:MAXIM_PATH}/Libraries/MaxUSB/include/devclass",
+        "${config:MAXIM_PATH}/Libraries/MaxUSB/include/enumerate"
     ],
     "C_Cpp.default.defines": [
 
@@ -105,6 +113,10 @@
         "string_view": "cpp",
         "ranges": "cpp"
     },
-    "cortex-debug.variableUseNaturalFormat": false
+    "cortex-debug.variableUseNaturalFormat": false,
+    "cSpell.words": [
+        "MAXUSB",
+        "NVIC"
+    ]
 }
 
